@@ -60,28 +60,101 @@ class LLMContentMonitor {
   }
 
   checkForLLMResponse(element) {
-    // OpenAI ChatGPT selectors
+    // OpenAI ChatGPT (both chat.openai.com and chatgpt.com)
     const chatGPTSelectors = [
       '[data-message-author-role="assistant"]',
+      '[data-testid*="conversation-turn"]',
       '.markdown',
-      '[class*="Message"]'
+      '[class*="Message"]',
+      '[class*="response"]'
     ];
 
     // Claude selectors  
     const claudeSelectors = [
       '[data-is-streaming="false"]',
       '.font-claude-message',
-      '[class*="Message"][class*="assistant"]'
+      '[class*="Message"][class*="assistant"]',
+      '[data-testid="message-text"]'
     ];
 
-    // Gemini/Bard selectors
-    const geminiSelectors = [
+    // Google (Gemini/Bard/AI Studio) selectors
+    const googleSelectors = [
       '[data-test-id*="response"]',
       '.model-response-text',
-      '[jsname*="response"]'
+      '[jsname*="response"]',
+      '.response-container-content',
+      '[class*="assistant-response"]',
+      // AI Studio specific selectors
+      '[data-testid="model-response"]',
+      '.model-output',
+      '[class*="generated-content"]',
+      '.response-text',
+      // MakerSuite selectors
+      '.prompt-response',
+      '[data-response-id]'
     ];
 
-    const allSelectors = [...chatGPTSelectors, ...claudeSelectors, ...geminiSelectors];
+    // Microsoft Copilot/Bing selectors
+    const microsoftSelectors = [
+      '.ac-textBlock',
+      '.b_slideexp',
+      '[class*="response-message"]',
+      '.cib-serp-main',
+      '[data-content*="response"]'
+    ];
+
+    // Character.AI selectors
+    const characterSelectors = [
+      '[class*="ChatMessage"]',
+      '[data-testid="message"]',
+      '.msg',
+      '[class*="character-message"]'
+    ];
+
+    // You.com selectors
+    const youcomSelectors = [
+      '.chat-turn',
+      '[data-testid="chat-turn"]',
+      '.youChatAnswer',
+      '[class*="ai-response"]'
+    ];
+
+    // Poe selectors
+    const poeSelectors = [
+      '[class*="Message_botMessageBubble"]',
+      '[class*="ChatMessage"]',
+      '[data-testid="botMessage"]'
+    ];
+
+    // Meta AI selectors
+    const metaSelectors = [
+      '[data-testid="message-container"]',
+      '.x1i10hfl',
+      '[role="article"]'
+    ];
+
+    // Generic fallback selectors for other LLMs
+    const genericSelectors = [
+      '[class*="message"]',
+      '[class*="response"]',
+      '[class*="assistant"]',
+      '[class*="bot"]',
+      '[class*="ai"]',
+      '[data-role="assistant"]',
+      '[data-author="assistant"]'
+    ];
+
+    const allSelectors = [
+      ...chatGPTSelectors, 
+      ...claudeSelectors, 
+      ...googleSelectors,
+      ...microsoftSelectors,
+      ...characterSelectors,
+      ...youcomSelectors,
+      ...poeSelectors,
+      ...metaSelectors,
+      ...genericSelectors
+    ];
     
     for (const selector of allSelectors) {
       const responseElement = element.querySelector ? element.querySelector(selector) : 
@@ -135,35 +208,71 @@ class LLMContentMonitor {
   detectProvider() {
     const hostname = window.location.hostname;
     
-    if (hostname.includes('openai.com')) return 'OpenAI ChatGPT';
+    if (hostname.includes('openai.com') || hostname === 'chatgpt.com') return 'OpenAI ChatGPT';
     if (hostname.includes('claude.ai') || hostname.includes('anthropic.com')) return 'Anthropic Claude';
     if (hostname.includes('bard.google.com')) return 'Google Bard';
-    if (hostname.includes('gemini.google.com')) return 'Google Gemini';
+    if (hostname.includes('gemini.google.com') || hostname.includes('ai.google.com')) return 'Google Gemini';
+    if (hostname.includes('aistudio.google.com')) return 'Google AI Studio';
+    if (hostname.includes('makersuite.google.com')) return 'Google MakerSuite';
+    if (hostname.includes('copilot.microsoft.com')) return 'Microsoft Copilot';
+    if (hostname.includes('bing.com')) return 'Microsoft Bing Chat';
+    if (hostname.includes('you.com')) return 'You.com';
+    if (hostname.includes('character.ai')) return 'Character.AI';
+    if (hostname.includes('poe.com')) return 'Poe by Quora';
+    if (hostname.includes('pi.ai')) return 'Inflection Pi';
+    if (hostname.includes('meta.ai') || hostname.includes('llama.meta.com')) return 'Meta AI';
+    if (hostname.includes('mistral.ai')) return 'Mistral AI';
+    if (hostname.includes('perplexity.ai')) return 'Perplexity';
+    if (hostname.includes('writesonic.com')) return 'Writesonic';
+    if (hostname.includes('jasper.ai')) return 'Jasper';
+    if (hostname.includes('copy.ai')) return 'Copy.ai';
+    if (hostname.includes('grammarly.com')) return 'Grammarly AI';
+    if (hostname.includes('notion.so')) return 'Notion AI';
+    if (hostname.includes('huggingface.co')) return 'Hugging Face';
     
-    return 'Unknown';
+    return 'Unknown LLM Service';
   }
 
   setupProviderSpecificMonitoring() {
     const provider = this.detectProvider();
     
-    switch (provider) {
-      case 'OpenAI ChatGPT':
+    switch (true) {
+      case provider.includes('OpenAI'):
         this.monitorChatGPT();
         break;
-      case 'Anthropic Claude':
+      case provider.includes('Claude'):
         this.monitorClaude();
         break;
-      case 'Google Bard':
-      case 'Google Gemini':
+      case provider.includes('Google'):
         this.monitorGoogle();
+        break;
+      case provider.includes('Microsoft'):
+        this.monitorMicrosoft();
+        break;
+      case provider.includes('Character'):
+        this.monitorCharacterAI();
+        break;
+      case provider.includes('You.com'):
+        this.monitorYouCom();
+        break;
+      case provider.includes('Poe'):
+        this.monitorPoe();
+        break;
+      case provider.includes('Meta'):
+        this.monitorMeta();
+        break;
+      default:
+        this.monitorGeneric();
         break;
     }
   }
 
   monitorChatGPT() {
-    // Monitor for streaming responses
+    // Monitor for streaming responses (works for both chat.openai.com and chatgpt.com)
     const checkForStreaming = () => {
-      const streamingElements = document.querySelectorAll('[data-message-author-role="assistant"]:not([data-logged])');
+      const streamingElements = document.querySelectorAll(
+        '[data-message-author-role="assistant"]:not([data-logged]), [data-testid*="conversation-turn"]:not([data-logged])'
+      );
       streamingElements.forEach(element => {
         element.setAttribute('data-logged', 'true');
         
@@ -191,9 +300,16 @@ class LLMContentMonitor {
   }
 
   monitorGoogle() {
-    // Monitor for Google's response format
+    // Monitor for Google's response format (Bard, Gemini, AI Studio, MakerSuite)
     const checkForGoogle = () => {
-      const responseElements = document.querySelectorAll('[data-test-id*="response"]:not([data-logged]), .model-response-text:not([data-logged])');
+      const responseElements = document.querySelectorAll(`
+        [data-test-id*="response"]:not([data-logged]), 
+        .model-response-text:not([data-logged]),
+        [data-testid="model-response"]:not([data-logged]),
+        .model-output:not([data-logged]),
+        .response-text:not([data-logged]),
+        .prompt-response:not([data-logged])
+      `);
       responseElements.forEach(element => {
         element.setAttribute('data-logged', 'true');
         this.extractAndLogResponse(element);
@@ -201,6 +317,86 @@ class LLMContentMonitor {
     };
 
     setInterval(checkForGoogle, 1000);
+  }
+
+  monitorMicrosoft() {
+    // Monitor Microsoft Copilot/Bing Chat responses
+    const checkForMicrosoft = () => {
+      const responseElements = document.querySelectorAll('.ac-textBlock:not([data-logged]), .cib-serp-main:not([data-logged])');
+      responseElements.forEach(element => {
+        element.setAttribute('data-logged', 'true');
+        this.extractAndLogResponse(element);
+      });
+    };
+
+    setInterval(checkForMicrosoft, 1000);
+  }
+
+  monitorCharacterAI() {
+    // Monitor Character.AI responses
+    const checkForCharacter = () => {
+      const responseElements = document.querySelectorAll('[class*="ChatMessage"]:not([data-logged]), [data-testid="message"]:not([data-logged])');
+      responseElements.forEach(element => {
+        element.setAttribute('data-logged', 'true');
+        this.extractAndLogResponse(element);
+      });
+    };
+
+    setInterval(checkForCharacter, 1000);
+  }
+
+  monitorYouCom() {
+    // Monitor You.com responses
+    const checkForYou = () => {
+      const responseElements = document.querySelectorAll('.youChatAnswer:not([data-logged]), [data-testid="chat-turn"]:not([data-logged])');
+      responseElements.forEach(element => {
+        element.setAttribute('data-logged', 'true');
+        this.extractAndLogResponse(element);
+      });
+    };
+
+    setInterval(checkForYou, 1000);
+  }
+
+  monitorPoe() {
+    // Monitor Poe by Quora responses
+    const checkForPoe = () => {
+      const responseElements = document.querySelectorAll('[class*="Message_botMessageBubble"]:not([data-logged]), [data-testid="botMessage"]:not([data-logged])');
+      responseElements.forEach(element => {
+        element.setAttribute('data-logged', 'true');
+        this.extractAndLogResponse(element);
+      });
+    };
+
+    setInterval(checkForPoe, 1000);
+  }
+
+  monitorMeta() {
+    // Monitor Meta AI responses
+    const checkForMeta = () => {
+      const responseElements = document.querySelectorAll('[data-testid="message-container"]:not([data-logged]), [role="article"]:not([data-logged])');
+      responseElements.forEach(element => {
+        element.setAttribute('data-logged', 'true');
+        this.extractAndLogResponse(element);
+      });
+    };
+
+    setInterval(checkForMeta, 1000);
+  }
+
+  monitorGeneric() {
+    // Generic monitoring for unknown LLM interfaces
+    const checkForGeneric = () => {
+      const responseElements = document.querySelectorAll(
+        '[class*="message"]:not([data-logged]), [class*="response"]:not([data-logged]), [class*="assistant"]:not([data-logged]), [class*="bot"]:not([data-logged])'
+      );
+      responseElements.forEach(element => {
+        element.setAttribute('data-logged', 'true');
+        this.extractAndLogResponse(element);
+      });
+    };
+
+    setInterval(checkForGeneric, 1000);
   }
 
   // Monitor user input as well

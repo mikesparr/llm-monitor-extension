@@ -15,7 +15,18 @@
     'api.anthropic.com', 
     'generativelanguage.googleapis.com',
     'api.cohere.ai',
-    'api.mistral.ai'
+    'api.mistral.ai',
+    'api.perplexity.ai',
+    'api.together.ai',
+    'api.replicate.com',
+    'huggingface.co',
+    'you.com/api',
+    'character.ai',
+    'poe.com',
+    'copilot.microsoft.com',
+    'bing.com',
+    'meta.ai',
+    'pi.ai'
   ];
 
   function isLLMEndpoint(url) {

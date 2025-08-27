@@ -6,41 +6,76 @@
   
   "permissions": [
     "webRequest",
-    "webRequestBlocking", 
     "storage",
     "activeTab",
-    "background",
+    "notifications",
     "declarativeNetRequest"
   ],
   
   "host_permissions": [
     "*://chat.openai.com/*",
+    "*://chatgpt.com/*",
+    "*://*.openai.com/*",
     "*://claude.ai/*",
     "*://*.anthropic.com/*",
     "*://bard.google.com/*",
     "*://gemini.google.com/*",
+    "*://ai.google.com/*",
+    "*://aistudio.google.com/*",
+    "*://makersuite.google.com/*",
     "*://*.cohere.ai/*",
     "*://*.huggingface.co/*",
-    "*://api.openai.com/*",
+    "*://huggingface.co/*",
     "*://*.replicate.com/*",
     "*://*.together.ai/*",
     "*://api.mistral.ai/*",
-    "*://*.perplexity.ai/*"
+    "*://chat.mistral.ai/*",
+    "*://*.perplexity.ai/*",
+    "*://you.com/*",
+    "*://*.character.ai/*",
+    "*://poe.com/*",
+    "*://*.inflection.ai/*",
+    "*://pi.ai/*",
+    "*://*.meta.ai/*",
+    "*://llama.meta.com/*",
+    "*://*.writesonic.com/*",
+    "*://*.jasper.ai/*",
+    "*://*.copy.ai/*",
+    "*://*.grammarly.com/*",
+    "*://*.notion.so/*",
+    "*://copilot.microsoft.com/*",
+    "*://bing.com/*",
+    "*://*.bing.com/*"
   ],
   
   "background": {
-    "service_worker": "background.js",
-    "type": "module"
+    "service_worker": "background.js"
   },
   
   "content_scripts": [
     {
       "matches": [
         "*://chat.openai.com/*",
+        "*://chatgpt.com/*",
+        "*://*.openai.com/*",
         "*://claude.ai/*",
         "*://*.anthropic.com/*",
         "*://bard.google.com/*",
-        "*://gemini.google.com/*"
+        "*://gemini.google.com/*",
+        "*://ai.google.com/*",
+        "*://aistudio.google.com/*",
+        "*://makersuite.google.com/*",
+        "*://you.com/*",
+        "*://*.character.ai/*",
+        "*://poe.com/*",
+        "*://pi.ai/*",
+        "*://*.meta.ai/*",
+        "*://llama.meta.com/*",
+        "*://copilot.microsoft.com/*",
+        "*://bing.com/*",
+        "*://*.bing.com/*",
+        "*://*.notion.so/*",
+        "*://*.grammarly.com/*"
       ],
       "js": ["content-script.js"],
       "run_at": "document_start"
@@ -49,12 +84,25 @@
   
   "action": {
     "default_popup": "popup.html",
-    "default_title": "LLM Monitor"
+    "default_title": "LLM Monitor",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
   },
+  
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png", 
+    "128": "icons/icon128.png"
+  },
+  
+  "options_page": "settings.html",
   
   "web_accessible_resources": [
     {
-      "resources": ["injected.js"],
+      "resources": ["injected.js", "settings.html"],
       "matches": ["<all_urls>"]
     }
   ]

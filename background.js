@@ -4,20 +4,54 @@ class LLMMonitor {
   constructor() {
     this.llmEndpoints = new Map([
       // OpenAI
-      ['chat.openai.com', { provider: 'OpenAI', type: 'web' }],
+      ['chat.openai.com', { provider: 'OpenAI ChatGPT', type: 'web' }],
+      ['chatgpt.com', { provider: 'OpenAI ChatGPT', type: 'web' }],
       ['api.openai.com', { provider: 'OpenAI', type: 'api' }],
       
       // Anthropic
-      ['claude.ai', { provider: 'Anthropic', type: 'web' }],
+      ['claude.ai', { provider: 'Anthropic Claude', type: 'web' }],
       ['api.anthropic.com', { provider: 'Anthropic', type: 'api' }],
       
       // Google
       ['bard.google.com', { provider: 'Google Bard', type: 'web' }],
       ['gemini.google.com', { provider: 'Google Gemini', type: 'web' }],
+      ['ai.google.com', { provider: 'Google AI', type: 'web' }],
+      ['aistudio.google.com', { provider: 'Google AI Studio', type: 'web' }],
+      ['makersuite.google.com', { provider: 'Google MakerSuite', type: 'web' }],
       
-      // Others
+      // Microsoft
+      ['copilot.microsoft.com', { provider: 'Microsoft Copilot', type: 'web' }],
+      ['bing.com', { provider: 'Microsoft Bing Chat', type: 'web' }],
+      ['www.bing.com', { provider: 'Microsoft Bing Chat', type: 'web' }],
+      
+      // Meta
+      ['meta.ai', { provider: 'Meta AI', type: 'web' }],
+      ['llama.meta.com', { provider: 'Meta Llama', type: 'web' }],
+      
+      // Other Popular LLMs
+      ['you.com', { provider: 'You.com', type: 'web' }],
+      ['character.ai', { provider: 'Character.AI', type: 'web' }],
+      ['beta.character.ai', { provider: 'Character.AI', type: 'web' }],
+      ['poe.com', { provider: 'Poe by Quora', type: 'web' }],
+      ['pi.ai', { provider: 'Inflection Pi', type: 'web' }],
+      
+      // API Endpoints
       ['api.cohere.ai', { provider: 'Cohere', type: 'api' }],
-      ['api.mistral.ai', { provider: 'Mistral', type: 'api' }]
+      ['api.mistral.ai', { provider: 'Mistral', type: 'api' }],
+      ['chat.mistral.ai', { provider: 'Mistral Chat', type: 'web' }],
+      ['api.perplexity.ai', { provider: 'Perplexity', type: 'api' }],
+      
+      // Content Creation Tools with AI
+      ['app.writesonic.com', { provider: 'Writesonic', type: 'web' }],
+      ['app.jasper.ai', { provider: 'Jasper', type: 'web' }],
+      ['app.copy.ai', { provider: 'Copy.ai', type: 'web' }],
+      ['app.grammarly.com', { provider: 'Grammarly AI', type: 'web' }],
+      ['www.notion.so', { provider: 'Notion AI', type: 'web' }],
+      
+      // Development/Code AI
+      ['huggingface.co', { provider: 'Hugging Face', type: 'web' }],
+      ['replicate.com', { provider: 'Replicate', type: 'web' }],
+      ['together.ai', { provider: 'Together AI', type: 'web' }]
     ]);
     
     this.sensitivePatterns = {
