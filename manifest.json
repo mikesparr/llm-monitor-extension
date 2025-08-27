@@ -1,0 +1,61 @@
+{
+  "manifest_version": 3,
+  "name": "LLM Data Leak Monitor",
+  "version": "1.0",
+  "description": "Corporate tool to monitor and log LLM interactions for data leak prevention",
+  
+  "permissions": [
+    "webRequest",
+    "webRequestBlocking", 
+    "storage",
+    "activeTab",
+    "background",
+    "declarativeNetRequest"
+  ],
+  
+  "host_permissions": [
+    "*://chat.openai.com/*",
+    "*://claude.ai/*",
+    "*://*.anthropic.com/*",
+    "*://bard.google.com/*",
+    "*://gemini.google.com/*",
+    "*://*.cohere.ai/*",
+    "*://*.huggingface.co/*",
+    "*://api.openai.com/*",
+    "*://*.replicate.com/*",
+    "*://*.together.ai/*",
+    "*://api.mistral.ai/*",
+    "*://*.perplexity.ai/*"
+  ],
+  
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  
+  "content_scripts": [
+    {
+      "matches": [
+        "*://chat.openai.com/*",
+        "*://claude.ai/*",
+        "*://*.anthropic.com/*",
+        "*://bard.google.com/*",
+        "*://gemini.google.com/*"
+      ],
+      "js": ["content-script.js"],
+      "run_at": "document_start"
+    }
+  ],
+  
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "LLM Monitor"
+  },
+  
+  "web_accessible_resources": [
+    {
+      "resources": ["injected.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

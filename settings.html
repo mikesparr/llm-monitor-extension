@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>LLM Monitor Settings</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      min-height: 100vh;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 300;
+    }
+
+    .header p {
+      margin: 0.5rem 0 0 0;
+      opacity: 0.9;
+    }
+
+    .content {
+      padding: 2rem;
+    }
+
+    .section {
+      margin-bottom: 3rem;
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 2rem;
+    }
+
+    .section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: #555;
+    }
+
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: auto;
+    }
+
+    .help-text {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 0.25rem;
+    }
+
+    .pattern-list {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 4px;
+      padding: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .pattern-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .pattern-item:last-child {
+      border-bottom: none;
+    }
+
+    .pattern-name {
+      font-weight: 500;
+      color: #333;
+    }
+
+    .pattern-regex {
+      font-family: monospace;
+      background: #e9ecef;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 0.8rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5a67d8;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #c82333;
+    }
+
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .alert {
+      padding: 1rem;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+    }
+
+    .alert-success {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+
+    .alert-danger {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+
+    .alert-warning {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      color: #856404;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid #e9ecef;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #495057;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: #6c757d;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #667eea;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🛡️ LLM Monitor Settings</h1>
+      <p>Configure monitoring rules and corporate integration</p>
+    </div>
+
+    <div class="content">
+      <!-- Alert Messages -->
+      <div id="alertContainer"></div>
+
+      <!-- General Settings -->
+      <div class="section">
+        <h2 class="section-title">⚙️ General Settings</h2>
+        
+        <div class="form-group">
+          <label for="monitoringEnabled">
+            <div class="checkbox-group">
+              <label class="toggle-switch">
+                <input type="checkbox" id="monitoringEnabled" checked>
+                <span class="slider"></span>
+              </label>
+              <span>Enable LLM Monitoring</span>
+            </div>
+          </label>
+          <div class="help-text">Turn monitoring on/off globally</div>
+        </div>
+
+        <div class="form-group">
+          <label for="riskThreshold">Risk Alert Threshold (1-10):</label>
+          <input type="range" id="riskThreshold" min="1" max="10" value="7" oninput="document.getElementById('thresholdValue').textContent = this.value">
+          <div class="help-text">Alert when risk score exceeds: <span id="thresholdValue">7</span></div>
+        </div>
+
+        <div class="form-group">
+          <label for="retentionDays">Log Retention (Days):</label>
+          <select id="retentionDays">
+            <option value="7">7 Days</option>
+            <option value="30">30 Days</option>
+            <option value="90" selected>90 Days</option>
+            <option value="365">1 Year</option>
+          </select>
+          <div class="help-text">How long to keep monitoring logs locally</div>
+        </div>
+
+        <div class="form-group">
+          <label for="userIdentity">User Identity:</label>
+          <input type="text" id="userIdentity" placeholder="Enter your email or employee ID">
+          <div class="help-text">Used for corporate reporting and audit trails</div>
+        </div>
+      </div>
+
+      <!-- LLM Provider Settings -->
+      <div class="section">
+        <h2 class="section-title">🤖 LLM Provider Settings</h2>
+        
+        <div class="form-group">
+          <label>Monitored Providers:</label>
+          <div class="checkbox-group">
+            <input type="checkbox" id="provider-openai" checked>
+            <label for="provider-openai">OpenAI (ChatGPT)</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="provider-anthropic" checked>
+            <label for="provider-anthropic">Anthropic (Claude)</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="provider-google" checked>
+            <label for="provider-google">Google (Bard/Gemini)</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="provider-cohere" checked>
+            <label for="provider-cohere">Cohere</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="provider-mistral" checked>
+            <label for="provider-mistral">Mistral AI</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="customDomains">Additional Domains to Monitor:</label>
+          <textarea id="customDomains" placeholder="Enter one domain per line&#10;example.ai&#10;api.custom-llm.com"></textarea>
+          <div class="help-text">Monitor additional LLM services not in the default list</div>
+        </div>
+      </div>
+
+      <!-- Sensitive Data Detection -->
+      <div class="section">
+        <h2 class="section-title">🔍 Sensitive Data Detection</h2>
+
+        <div class="form-group">
+          <label>Detection Categories:</label>
+          <div class="checkbox-group">
+            <input type="checkbox" id="detect-pii" checked>
+            <label for="detect-pii">Personal Information (SSN, Email, Phone)</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="detect-secrets" checked>
+            <label for="detect-secrets">API Keys & Secrets</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="detect-code" checked>
+            <label for="detect-code">Source Code</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="detect-confidential" checked>
+            <label for="detect-confidential">Confidential Markers</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="detect-financial" checked>
+            <label for="detect-financial">Financial Information</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="customPatterns">Custom Detection Patterns:</label>
+          <textarea id="customPatterns" placeholder="Enter custom regex patterns (JSON format)&#10;{&#10;  &quot;employee_id&quot;: &quot;EMP\\d{6}&quot;,&#10;  &quot;project_code&quot;: &quot;PROJ-[A-Z]{3}-\\d{4}&quot;&#10;}"></textarea>
+          <div class="help-text">Add company-specific patterns in JSON format</div>
+        </div>
+
+        <div class="pattern-list">
+          <h4>Active Detection Patterns:</h4>
+          <div id="patternList">
+            <div class="pattern-item">
+              <span class="pattern-name">Social Security Numbers</span>
+              <span class="pattern-regex">\b\d{3}[-.]?\d{2}[-.]?\d{4}\b</span>
+            </div>
+            <div class="pattern-item">
+              <span class="pattern-name">Email Addresses</span>
+              <span class="pattern-regex">\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b</span>
+            </div>
+            <div class="pattern-item">
+              <span class="pattern-name">API Keys</span>
+              <span class="pattern-regex">(api[_-]?key|secret[_-]?key)[\s=:]([a-zA-Z0-9_-]{20,})</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Corporate Integration -->
+      <div class="section">
+        <h2 class="section-title">🏢 Corporate Integration</h2>
+        
+        <div class="form-group">
+          <label for="corporateEndpoint">Corporate Monitoring Endpoint:</label>
+          <input type="url" id="corporateEndpoint" placeholder="https://siem.yourcompany.com/api/llm-logs">
+          <div class="help-text">URL where high-risk alerts will be sent (HTTPS required)</div>
+        </div>
+
+        <div class="form-group">
+          <label for="apiToken">API Authentication Token:</label>
+          <input type="password" id="apiToken" placeholder="Bearer token or API key">
+          <div class="help-text">Authentication for corporate endpoint (stored securely)</div>
+        </div>
+
+        <div class="form-group">
+          <label for="organizationUnit">Organization Unit:</label>
+          <input type="text" id="organizationUnit" placeholder="Engineering/Security/Marketing">
+          <div class="help-text">Department or team for reporting context</div>
+        </div>
+
+        <div class="form-group">
+          <label>Alert Preferences:</label>
+          <div class="checkbox-group">
+            <input type="checkbox" id="alert-browser" checked>
+            <label for="alert-browser">Browser Notifications</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="alert-corporate" checked>
+            <label for="alert-corporate">Corporate SIEM Integration</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="alert-email">
+            <label for="alert-email">Email Notifications</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Statistics & Management -->
+      <div class="section">
+        <h2 class="section-title">📊 Statistics & Data Management</h2>
+        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div id="totalLogs" class="stat-number">0</div>
+            <div class="stat-label">Total Logs</div>
+          </div>
+          <div class="stat-card">
+            <div id="storageUsed" class="stat-number">0MB</div>
+            <div class="stat-label">Storage Used</div>
+          </div>
+          <div class="stat-card">
+            <div id="lastAlert" class="stat-number">Never</div>
+            <div class="stat-label">Last Alert</div>
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button id="exportAllBtn" class="btn btn-primary">📥 Export All Logs</button>
+          <button id="clearLogsBtn" class="btn btn-secondary">🗑️ Clear Old Logs</button>
+          <button id="resetSettingsBtn" class="btn btn-danger">🔄 Reset to Defaults</button>
+        </div>
+      </div>
+
+      <!-- Test & Validation -->
+      <div class="section">
+        <h2 class="section-title">🧪 Test & Validation</h2>
+        
+        <div class="form-group">
+          <label for="testInput">Test Sensitive Data Detection:</label>
+          <textarea id="testInput" placeholder="Paste content here to test detection patterns..."></textarea>
+          <button id="testDetectionBtn" class="btn btn-primary" style="margin-top: 0.5rem;">Test Detection</button>
+          <div id="testResults" class="alert hidden" style="margin-top: 1rem;"></div>
+        </div>
+
+        <div class="form-group">
+          <button id="testConnectionBtn" class="btn btn-secondary">Test Corporate Connection</button>
+          <div id="connectionResults" class="help-text"></div>
+        </div>
+      </div>
+
+      <!-- Save/Cancel Buttons -->
+      <div class="btn-group">
+        <button id="saveBtn" class="btn btn-success">💾 Save Settings</button>
+        <button id="cancelBtn" class="btn btn-secondary">❌ Cancel</button>
+        <button id="backBtn" class="btn btn-secondary">← Back to Monitor</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="settings.js"></script>
+</body>
+</html>

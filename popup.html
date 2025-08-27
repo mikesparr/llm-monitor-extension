@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 400px;
+      padding: 20px;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 15px;
+    }
+    
+    .header h1 {
+      margin: 0;
+      font-size: 18px;
+      color: #333;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .stat-card {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid #e9ecef;
+    }
+    
+    .stat-number {
+      font-size: 24px;
+      font-weight: bold;
+      color: #495057;
+      margin-bottom: 5px;
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: #6c757d;
+      text-transform: uppercase;
+    }
+    
+    .high-risk {
+      color: #dc3545;
+    }
+    
+    .medium-risk {
+      color: #fd7e14;
+    }
+    
+    .low-risk {
+      color: #28a745;
+    }
+    
+    .recent-activity {
+      margin-bottom: 20px;
+    }
+    
+    .activity-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid #e9ecef;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      background: white;
+    }
+    
+    .activity-info {
+      flex: 1;
+    }
+    
+    .activity-provider {
+      font-weight: 600;
+      font-size: 14px;
+      color: #333;
+    }
+    
+    .activity-time {
+      font-size: 12px;
+      color: #6c757d;
+    }
+    
+    .activity-risk {
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .btn {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      background: white;
+      cursor: pointer;
+      font-size: 13px;
+      text-align: center;
+      text-decoration: none;
+      color: #495057;
+    }
+    
+    .btn:hover {
+      background: #e9ecef;
+    }
+    
+    .btn-primary {
+      background: #007bff;
+      color: white;
+      border-color: #007bff;
+    }
+    
+    .btn-primary:hover {
+      background: #0056b3;
+    }
+    
+    .filters {
+      margin-bottom: 15px;
+    }
+    
+    .filter-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+    
+    .filter-row label {
+      font-size: 12px;
+      color: #495057;
+      min-width: 80px;
+    }
+    
+    .filter-row select, .filter-row input {
+      flex: 1;
+      padding: 4px 8px;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    
+    .empty-state {
+      text-align: center;
+      color: #6c757d;
+      font-style: italic;
+      padding: 20px;
+    }
+    
+    .alert {
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-size: 13px;
+    }
+    
+    .alert-warning {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      color: #856404;
+    }
+    
+    .alert-danger {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+    
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🛡️ LLM Monitor</h1>
+    <div id="status" class="alert alert-warning hidden">
+      Extension monitoring is active
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div id="totalRequests" class="stat-number">0</div>
+      <div class="stat-label">Total Requests</div>
+    </div>
+    <div class="stat-card">
+      <div id="highRiskCount" class="stat-number high-risk">0</div>
+      <div class="stat-label">High Risk</div>
+    </div>
+    <div class="stat-card">
+      <div id="todayCount" class="stat-number">0</div>
+      <div class="stat-label">Today</div>
+    </div>
+    <div class="stat-card">
+      <div id="leaksDetected" class="stat-number medium-risk">0</div>
+      <div class="stat-label">Leaks Detected</div>
+    </div>
+  </div>
+
+  <div class="filters">
+    <div class="filter-row">
+      <label>Provider:</label>
+      <select id="providerFilter">
+        <option value="">All Providers</option>
+        <option value="OpenAI">OpenAI</option>
+        <option value="Anthropic">Anthropic</option>
+        <option value="Google Bard">Google Bard</option>
+        <option value="Google Gemini">Google Gemini</option>
+      </select>
+    </div>
+    <div class="filter-row">
+      <label>Risk Level:</label>
+      <select id="riskFilter">
+        <option value="">All Levels</option>
+        <option value="7">High Risk (7+)</option>
+        <option value="4">Medium Risk (4+)</option>
+        <option value="1">Low Risk (1+)</option>
+      </select>
+    </div>
+    <div class="filter-row">
+      <label>Time Range:</label>
+      <select id="timeFilter">
+        <option value="">All Time</option>
+        <option value="1">Last 24 Hours</option>
+        <option value="7">Last 7 Days</option>
+        <option value="30">Last 30 Days</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="refreshBtn" class="btn">🔄 Refresh</button>
+    <button id="exportBtn" class="btn">📥 Export</button>
+    <button id="settingsBtn" class="btn">⚙️ Settings</button>
+  </div>
+
+  <div class="recent-activity">
+    <h3 style="margin: 0 0 10px 0; font-size: 14px; color: #495057;">Recent Activity</h3>
+    <div id="activityList">
+      <div class="empty-state">No LLM interactions detected</div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
